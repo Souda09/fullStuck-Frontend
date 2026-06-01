@@ -2,8 +2,9 @@ import axios from 'axios';
 
 // 1. Axios Instance Create karna
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api/auth', // 🟢 Updated to PORT 5000 matching your backend!
- withCredentials: true,
+  // Is URL ko check karein ke sahi deployed backend URL hai
+  baseURL: 'https://full-stuck-backend.vercel.app/api/auth', 
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   }
