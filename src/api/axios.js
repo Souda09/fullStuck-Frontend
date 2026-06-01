@@ -3,7 +3,7 @@ import axios from 'axios';
 // 1. Axios Instance Create karna
 const API = axios.create({
   // Is URL ko check karein ke sahi deployed backend URL hai
-  baseURL: 'https://full-stuck-backend.vercel.app/login', 
+  baseURL: 'https://full-stuck-backend.vercel.app/api/auth/login', 
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
