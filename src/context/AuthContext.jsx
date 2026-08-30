@@ -1,46 +1,43 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import axios from '../api/axiosConfig';
+import { useSocket } from '../hooks/useSocket';
 
-// Context create karna
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-// Provider Component definition
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const socket = useSocket();
 
-  // App load hote hi LocalStorage se user session check karna
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
-    
-    if (savedUser && token) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      
-      // 🔴 Inspect Console (F12) mein reload par log dikhana
-      console.log('%c🔄 [AUTH SYSTEM] Existing Session Loaded from LocalStorage!', 'color: #00e5ff; font-weight: bold; font-size: 12px;');
-      console.log(`👤 User: ${parsedUser.name} | Role: ${parsedUser.role.toUpperCase()}`);
-    } else {
-      console.log('%cℹ️ [AUTH SYSTEM] No active session found. Please login.', 'color: #888888; font-style: italic;');
+    const savedUser = localStorage.getItem('user');
+    if (token && savedUser) {
+      const parsed = JSON.parse(savedUser);
+      setUser(parsed);
+      if (socket) {
+        socket.emit('join_user_room', parsed.id);
+        if (parsed.role === 'admin') socket.emit('join_admin_room');
+      }
     }
     setLoading(false);
-  }, []);
+  }, [socket]);
 
-  // Login session save karna (LocalStorage + Context State)
   const login = (userData, token) => {
     setUser(userData);
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
+    if (socket) {
+      socket.emit('join_user_room', userData.id);
+      if (userData.role === 'admin') socket.emit('join_admin_room');
+    }
   };
 
-  // Logout session (Clear everything)
   const logout = () => {
-    // 🔴 Inspect Console (F12) mein logout print
-    console.log('%c🚪 [AUTH SYSTEM] User logged out. LocalStorage session cleared.', 'color: #ff9900; font-weight: bold; font-size: 12px;');
-    
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    if (socket) socket.disconnect();
   };
 
   return (
@@ -49,3 +46,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+export const useAuth = () => useContext(AuthContext);
