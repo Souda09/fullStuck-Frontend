@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const SUGGESTIONS = [
   'Payment Refund Issue', 'Login Failure', 'Account Suspension', 'Slow Loading',
@@ -126,30 +127,31 @@ const TicketForm = ({ ticket, onSubmit, onClose, isAdmin = false }) => {
             )}
           </div>
 
-          {/* Category & Priority */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Category</label>
-              <select name="category" value={formData.category} onChange={handleChange}
-                className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none">
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Category</label>
+            <select name="category" value={formData.category} onChange={handleChange}
+              className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none">
+              {categories.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+
+          {/* Priority – Only for Admin (if admin) */}
+          {isAdmin && (
             <div>
               <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Priority</label>
               <select
                 name="priority"
                 value={formData.priority}
                 onChange={handleChange}
-                disabled={!isAdmin}
-                className={`w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                className="w-full px-3 py-2 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
               >
                 {priorities.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
-          </div>
+          )}
 
-          {/* ✅ Admin Status & Resolution */}
+          {/* Admin Status & Resolution */}
           {ticket && isAdmin && (
             <>
               {isLocked ? (
@@ -197,4 +199,5 @@ const TicketForm = ({ ticket, onSubmit, onClose, isAdmin = false }) => {
     </motion.div>
   );
 };
+
 export default TicketForm;

@@ -10,7 +10,8 @@ export const useSocket = () => {
     const token = localStorage.getItem('token');
     if (token) {
       const newSocket = io(SOCKET_URL, {
-        transports: ['websocket', 'polling'],
+       transports: ['polling', 'websocket'],  // ✅ Allow both
+   // ✅ Force polling only (no WebSocket)
         auth: { token },
       });
       setSocket(newSocket);
